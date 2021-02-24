@@ -2,6 +2,7 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const config = require('../config/index');
 const { UnauthorizedError } = require('../errors/index');
+
 const jwtSecret = process.env.jwtSecret ?? config.jwtSecret;
 const authMiddleware = (req, res, next) => {
   try {

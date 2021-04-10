@@ -11,6 +11,7 @@ const {
 
 const { ObjectId } = Types;
 const config = require('../config/index');
+
 const jwtSecret = process.env.jwtSecret ?? config.jwtSecret;
 
 const getCurrentUser = async (req, res, next) => {
@@ -27,13 +28,13 @@ const getCurrentUser = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   try {
-    const { email, password,name } = req.body;
+    const { email, password, name } = req.body;
     const isRegistered = await User.findOne({ email });
     if (isRegistered) {
       next(new AlreadyExistsError('Пользователь с таким email уже существует'));
     } else {
       const hashedPassword = await bcrypt.hash(password, 10);
-      const user = new User({ email,name, password: hashedPassword });
+      const user = new User({ email, name, password: hashedPassword });
       await user.save();
       const sendingUser = user.toObject();
       delete sendingUser.password;
@@ -54,13 +55,13 @@ const signin = async (req, res, next) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       next(new UnauthorizedError('Неправильный почта/пароль'));
-    }else{
-    const token = jwt.sign(
-      { _id: user?._id },
-      jwtSecret,
-      { expiresIn: '7d' },
-    );
-    return res.send({ token });
+    } else {
+      const token = jwt.sign(
+        { _id: user?._id },
+        jwtSecret,
+        { expiresIn: '7d' },
+      );
+      return res.send({ token });
     }
   } catch (e) {
     next(e);
@@ -74,14 +75,13 @@ const updateUser = async (req, res, next) => {
       .findByIdAndUpdate(userId, { $set: req.body }, { new: true, runValidators: true });
     if (!user) {
       next(new NotFoundError('Пользователь не найден'));
-    }else{
-    return res.send(user);
+    } else {
+      return res.send(user);
     }
   } catch (e) {
     next(e);
   }
 };
-
 
 module.exports = {
   createUser, updateUser, signin, getCurrentUser,

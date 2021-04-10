@@ -11,7 +11,7 @@ const {
 } = require('../validation/index');
 
 router.get('/users/me', getValidation, auth, getCurrentUser);
-router.put('/users/me', updateUserValidation, auth, updateUser);
+router.patch('/users/me', updateUserValidation, auth, updateUser);
 router.post('/signin', signinValidation, signin);
 router.post('/signup', signupValidation, createUser);
 
